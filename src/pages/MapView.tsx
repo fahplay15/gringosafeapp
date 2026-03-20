@@ -29,7 +29,7 @@ export default function MapView() {
         </div>
       </div>
 
-      <div className="absolute top-16 right-4 z-10 glass-card p-2.5 space-y-1.5">
+      <div className="absolute bottom-24 right-4 z-10 glass-card p-2.5 space-y-1.5">
         {LEGEND.map(({ color, label }) => (
           <div key={label} className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: color }} />

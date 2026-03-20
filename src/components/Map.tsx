@@ -14,11 +14,11 @@ const STATUS_COLORS: Record<string, string> = {
 
 function createPinElement(vendor: Vendor): HTMLElement {
   const el = document.createElement('div')
-  el.style.display = 'flex'
-  el.style.alignItems = 'flex-end'
-  el.style.justifyContent = 'center'
-  el.style.cursor = 'pointer'
   el.style.position = 'relative'
+  el.style.width = 'auto'
+  el.style.height = 'auto'
+  el.style.cursor = 'pointer'
+  el.style.userSelect = 'none'
 
   const size = vendor.isPremium ? 52 : 40
   const color = STATUS_COLORS[vendor.status]
@@ -35,12 +35,12 @@ function createPinElement(vendor: Vendor): HTMLElement {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    flex-shrink: 0;
   `
   
   if (vendor.isPremium) {
     const star = document.createElement('div')
-    star.style.cssText = `transform:rotate(45deg);font-size:20px;`
+    star.style.cssText = `transform:rotate(45deg);font-size:20px;line-height:1;`
     star.textContent = '★'
     pin.appendChild(star)
   }
@@ -57,6 +57,8 @@ function createPinElement(vendor: Vendor): HTMLElement {
       border:2px solid #0D1117;
       display:flex;align-items:center;justify-content:center;
       font-size:10px; color:white; font-weight:bold;
+      flex-shrink: 0;
+      z-index:30;
     `
     alert.textContent = '!'
     el.appendChild(alert)
@@ -69,18 +71,20 @@ function createPinElement(vendor: Vendor): HTMLElement {
       border-radius:50%;
       border:2px solid ${color}66;
       animation: pulse-ring 2s ease-out infinite;
+      z-index:5;
     `
     el.appendChild(pulse)
   }
 
   const label = document.createElement('div')
   label.style.cssText = `
-    position:absolute; bottom:-32px; left:50%; transform:translateX(-50%);
+    position:absolute; top:100%; left:50%; transform:translateX(-50%) translateY(8px);
     background:rgba(13,17,23,0.95); color:white; font-size:11px;
     padding:4px 8px; border-radius:6px; white-space:nowrap;
     border:1px solid ${STATUS_COLORS[vendor.status]}77;
     pointer-events:none;
     font-weight:500;
+    z-index:20;
   `
   label.textContent = vendor.name
   el.appendChild(label)
@@ -125,6 +129,14 @@ export default function MapComponent() {
     })
     
     map.addControl(geolocateControl, 'top-right')
+
+    // Aumentar z-index dos controles do mapa para acima de outros elementos
+    setTimeout(() => {
+      const controls = document.querySelectorAll('.mapboxgl-ctrl')
+      controls.forEach(ctrl => {
+        (ctrl as HTMLElement).style.zIndex = '50'
+      })
+    }, 100)
 
     return () => {
       map.remove()
