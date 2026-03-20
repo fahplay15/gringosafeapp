@@ -320,7 +320,7 @@ export default function LocalPanel() {
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 z-10 p-4 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 z-10 p-4 pb-6 pointer-events-none safe-area-inset-bottom">
         <div className="flex gap-3 max-w-md mx-auto pointer-events-auto">
           <button
             onClick={() => setShowPanel(!showPanel)}

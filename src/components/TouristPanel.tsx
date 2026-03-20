@@ -84,7 +84,7 @@ export default function TouristPanel() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 z-10 p-4 space-y-3 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 z-10 p-4 pb-6 space-y-3 pointer-events-none safe-area-inset-bottom">
         {showQueries && (
           <div className="glass-card p-4 pointer-events-auto max-w-md mx-auto">
             <div className="flex items-center justify-between mb-3">

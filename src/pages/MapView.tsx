@@ -18,7 +18,9 @@ export default function MapView() {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
-      <MapComponent />
+      <div className="absolute inset-0 pb-20 sm:pb-0 overflow-hidden">
+        <MapComponent />
+      </div>
 
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
         <div className="glass-card px-3 py-1.5 flex items-center gap-1.5">
