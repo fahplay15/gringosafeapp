@@ -1,9 +1,37 @@
 import { useState } from 'react';
-import { generatePriceSuggestion, validatePrice, answerQuery } from '../config/gemini';
+import { generatePriceSuggestion, validatePrice, answerQuery, identifyProduct, suggestPrice } from '../config/gemini';
 
 export function useGemini() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const identify = async (productText: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await identifyProduct(productText);
+      return result;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao identificar produto');
+      return { name: productText, unit: 'unid', category: 'outro' };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const suggestPriceAI = async (item: string, unit: string, region?: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await suggestPrice(item, unit, region);
+      return result;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao sugerir preço');
+      return { price: 0, range: '' };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getSuggestion = async (item: string, region: string) => {
     setLoading(true);
@@ -50,6 +78,8 @@ export function useGemini() {
   return {
     loading,
     error,
+    identify,
+    suggestPriceAI,
     getSuggestion,
     checkPrice,
     getAnswer,

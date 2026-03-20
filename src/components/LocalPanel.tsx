@@ -1,20 +1,52 @@
-import { ArrowLeft, DollarSign, Plus, CheckCircle, Clock, Wallet, Send } from 'lucide-react'
+import { ArrowLeft, DollarSign, Plus, CheckCircle, Clock, Wallet, Send, Sparkles, AlertCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useAppStore } from '../store/appStore'
+import { useGemini } from '../hooks/useGemini'
 import type { PriceItem, QueryAnswer } from '../types'
 
 function AddPriceModal({ onClose }: { onClose: () => void }) {
   const { vendors, addPriceReport, addBalance, localUser } = useAppStore()
+  const { identify, suggestPriceAI, checkPrice, loading } = useGemini()
   const [vendorId, setVendorId] = useState(vendors[0]?.id ?? '')
   const [itemName, setItemName] = useState('')
+  const [normalizedName, setNormalizedName] = useState('')
   const [price, setPrice] = useState('')
   const [unit, setUnit] = useState('unid')
+  const [suggestion, setSuggestion] = useState<{ price: number; range: string } | null>(null)
+  const [validation, setValidation] = useState<{ fair: boolean; message: string } | null>(null)
+  const [analyzing, setAnalyzing] = useState(false)
+
+  const handleItemChange = async (value: string) => {
+    setItemName(value)
+    
+    if (value.length > 2) {
+      setAnalyzing(true)
+      // Identificar produto
+      const identified = await identify(value)
+      setNormalizedName(identified.name)
+      setUnit(identified.unit)
+      
+      // Sugerir preço
+      const priceSuggestion = await suggestPriceAI(identified.name, identified.unit)
+      setSuggestion(priceSuggestion)
+      setAnalyzing(false)
+    }
+  }
+
+  const handlePriceChange = async (value: string) => {
+    setPrice(value)
+    
+    if (value && normalizedName && parseFloat(value) > 0) {
+      const validation = await checkPrice(normalizedName, parseFloat(value), vendors.find(v => v.id === vendorId)?.name || 'Praia')
+      setValidation(validation)
+    }
+  }
 
   const handleSubmit = () => {
     if (!itemName.trim() || !price || !vendorId) return
     const item: PriceItem = {
       id: `pi_${Date.now()}`,
-      name: itemName.trim(),
+      name: normalizedName || itemName.trim(),
       value: parseFloat(price),
       unit,
       reportedBy: localUser.name,
@@ -28,7 +60,10 @@ function AddPriceModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-end justify-center p-4">
       <div className="glass-card w-full max-w-md p-6">
-        <h3 className="font-bold text-lg mb-4">Cadastrar Preço Real</h3>
+        <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-yellow-400" />
+          Cadastrar Preço Real
+        </h3>
         <div className="space-y-3">
           <div>
             <label className="text-xs text-gray-500 mb-1 block">Estabelecimento</label>
@@ -42,25 +77,45 @@ function AddPriceModal({ onClose }: { onClose: () => void }) {
               ))}
             </select>
           </div>
+          
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Item</label>
+            <label className="text-xs text-gray-500 mb-1 block flex items-center gap-1">
+              Item {analyzing && <span className="text-xs text-yellow-400 animate-spin">⚡</span>}
+            </label>
             <input
               value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
+              onChange={(e) => handleItemChange(e.target.value)}
               placeholder="Ex: Caipirinha, Água de Coco..."
               className="w-full bg-white/5 border border-brand-border rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-green-500 placeholder:text-gray-600"
+              disabled={analyzing}
             />
+            {normalizedName && normalizedName !== itemName && (
+              <p className="text-xs text-green-400 mt-1">✓ Reconhecido como: <span className="font-semibold">{normalizedName}</span></p>
+            )}
           </div>
+          
           <div className="flex gap-3">
             <div className="flex-1">
               <label className="text-xs text-gray-500 mb-1 block">Preço (R$)</label>
               <input
                 type="number"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => handlePriceChange(e.target.value)}
                 placeholder="0,00"
-                className="w-full bg-white/5 border border-brand-border rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-green-500 placeholder:text-gray-600"
+                className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-sm focus:outline-none placeholder:text-gray-600 ${
+                  validation ? (validation.fair ? 'border-green-500' : 'border-yellow-500') : 'border-brand-border'
+                } focus:border-green-500`}
               />
+              {suggestion?.price && !price && (
+                <p className="text-xs text-yellow-400 mt-1 flex items-center gap-1">
+                  💡 Sugestão: R${suggestion.price.toFixed(2)} ({suggestion.range})
+                </p>
+              )}
+              {validation && (
+                <p className={`text-xs mt-1 flex items-center gap-1 ${validation.fair ? 'text-green-400' : 'text-yellow-400'}`}>
+                  {validation.fair ? '✓' : '⚠'} {validation.message}
+                </p>
+              )}
             </div>
             <div>
               <label className="text-xs text-gray-500 mb-1 block">Unidade</label>
@@ -73,6 +128,7 @@ function AddPriceModal({ onClose }: { onClose: () => void }) {
                 <option style={{ background: '#161B22' }} value="kg">kg</option>
                 <option style={{ background: '#161B22' }} value="dia">dia</option>
                 <option style={{ background: '#161B22' }} value="porção">porção</option>
+                <option style={{ background: '#161B22' }} value="litro">litro</option>
               </select>
             </div>
           </div>
@@ -90,9 +146,10 @@ function AddPriceModal({ onClose }: { onClose: () => void }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold text-sm transition-colors"
+            disabled={!itemName.trim() || !price || !vendorId || loading}
+            className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 disabled:bg-gray-600 disabled:opacity-50 text-white font-semibold text-sm transition-colors"
           >
-            Enviar
+            {loading ? 'Analisando...' : 'Enviar'}
           </button>
         </div>
       </div>
