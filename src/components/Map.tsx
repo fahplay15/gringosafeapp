@@ -117,7 +117,7 @@ export default function MapComponent() {
 
     mapRef.current = map
 
-    // Adicionar botão de localização atual no meio do lado direito
+    // Adicionar botão de localização atual no lado direito
     const geolocateControl = new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: false
@@ -126,18 +126,14 @@ export default function MapComponent() {
       showUserHeading: true,
     })
     
-    map.addControl(geolocateControl, 'bottom-right')
+    map.addControl(geolocateControl, 'top-right')
 
     // Posicionar o geolocate acima de outros controles
     setTimeout(() => {
       const geolocateBtn = document.querySelector('.mapboxgl-ctrl-geolocate') as HTMLElement
       if (geolocateBtn) {
-        geolocateBtn.style.order = '-1'
-      }
-      const controlGroup = document.querySelector('.mapboxgl-ctrl-bottom-right') as HTMLElement
-      if (controlGroup) {
-        controlGroup.style.display = 'flex'
-        controlGroup.style.flexDirection = 'column'
+        geolocateBtn.style.marginTop = '10px'
+        geolocateBtn.style.marginRight = '10px'
       }
     }, 100)
 
