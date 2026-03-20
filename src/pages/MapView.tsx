@@ -39,7 +39,7 @@ export default function MapView() {
         ))}
       </div>
 
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
+      <div className="absolute right-4 top-1/2 translate-y-12 z-20">
         <GeolocationButton />
       </div>
 

@@ -94,10 +94,9 @@ function createPinElement(vendor: Vendor): HTMLElement {
 }
 
 export default function MapComponent() {
-  const mapContainer = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const queryMarkersRef = useRef<mapboxgl.Marker[]>([])
+  const userLocationMarkerRef = useRef<mapboxgl.Marker | null>(null)
 
   const { vendors, queries, radarActive, setSelectedVendor, setActiveQuery, role } = useAppStore()
 
@@ -131,6 +130,40 @@ export default function MapComponent() {
       const customEvent = event as CustomEvent
       const { lat, lng } = customEvent.detail
       
+      // Remover marcador anterior se existir
+      if (userLocationMarkerRef.current) {
+        userLocationMarkerRef.current.remove()
+      }
+
+      // Criar elemento do marcador de localização do usuário
+      const userLocationEl = document.createElement('div')
+      userLocationEl.style.cssText = `
+        width: 32px;
+        height: 32px;
+        background: radial-gradient(circle at 30% 30%, #2979FF, #1a4fb8);
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 20px #2979FF99, inset 0 0 10px rgba(255,255,255,0.3);
+        position: relative;
+      `
+      
+      // Adicionar pulsação
+      const pulse = document.createElement('div')
+      pulse.style.cssText = `
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 2px solid #2979FF;
+        animation: pulse-location 2s ease-out infinite;
+      `
+      userLocationEl.appendChild(pulse)
+
+      // Adicionar marcador no mapa
+      userLocationMarkerRef.current = new mapboxgl.Marker({ element: userLocationEl })
+        .setLngLat([lng, lat])
+        .addTo(map)
+
+      // Animar para a localização
       map.flyTo({
         center: [lng, lat],
         zoom: 16,

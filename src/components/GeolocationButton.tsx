@@ -1,18 +1,18 @@
-import { MapPin } from 'lucide-react'
-import { useRef } from 'react'
+import { MapPin, Loader } from 'lucide-react'
+import { useState } from 'react'
 
 export default function GeolocationButton() {
-  const isLoadingRef = useRef(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleGeolocation = () => {
-    if (isLoadingRef.current) return
+    if (isLoading) return
 
     if (!navigator.geolocation) {
       alert('Geolocalização não suportada neste navegador')
       return
     }
 
-    isLoadingRef.current = true
+    setIsLoading(true)
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -25,14 +25,15 @@ export default function GeolocationButton() {
           })
         )
 
-        isLoadingRef.current = false
+        setIsLoading(false)
       },
       (error) => {
         console.error('Erro ao obter localização:', error)
-        isLoadingRef.current = false
+        alert('Erro ao obter sua localização. Verifique as permissões do navegador.')
+        setIsLoading(false)
       },
       {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         timeout: 10000,
       }
     )
@@ -41,10 +42,17 @@ export default function GeolocationButton() {
   return (
     <button
       onClick={handleGeolocation}
-      className="glass-card p-3 rounded-xl hover:bg-white/10 transition-colors text-blue-400 hover:text-blue-300 shadow-lg"
+      disabled={isLoading}
+      className={`glass-card p-3 rounded-xl transition-all text-blue-400 hover:text-blue-300 shadow-lg ${
+        isLoading ? 'opacity-75 cursor-not-allowed' : 'hover:bg-white/10'
+      }`}
       title="Ir para minha localização"
     >
-      <MapPin className="w-5 h-5" />
+      {isLoading ? (
+        <Loader className="w-5 h-5 animate-spin" />
+      ) : (
+        <MapPin className="w-5 h-5" />
+      )}
     </button>
   )
 }
