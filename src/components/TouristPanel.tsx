@@ -67,7 +67,7 @@ export default function TouristPanel() {
     <>
       {showQueryModal && <QueryModal />}
 
-      <div className="absolute top-0 left-0 right-0 z-10 p-4 flex items-center justify-between pointer-events-none">
+      <div className="absolute top-20 left-0 right-0 z-10 p-4 flex items-center justify-between pointer-events-none">
         <button
           onClick={() => setRole(null)}
           className="glass-card px-3 py-2 flex items-center gap-2 text-sm text-gray-300 hover:text-white pointer-events-auto transition-colors"
