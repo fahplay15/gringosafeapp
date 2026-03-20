@@ -9,13 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.3.1",
+    "clsx": "^2.1.1",
     "firebase": "^10.7.0",
+    "lucide-react": "^0.395.0",
     "mapbox-gl": "^3.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zustand": "^4.5.2",
-    "lucide-react": "^0.395.0",
-    "clsx": "^2.1.1"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/mapbox-gl": "^3.4.0",
