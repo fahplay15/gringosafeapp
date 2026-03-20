@@ -77,7 +77,7 @@ export default function MapComponent() {
 
     const map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: INITIAL_CENTER,
       zoom: 14.5,
       pitch: 30,
