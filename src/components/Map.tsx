@@ -125,13 +125,18 @@ export default function MapComponent() {
   }, [])
 
   useEffect(() => {
-    const map = mapRef.current
-    if (!map) return
-
     const handleGeolocation = (event: Event) => {
+      const map = mapRef.current
+      if (!map) {
+        console.error('Mapa não inicializado')
+        return
+      }
+
       const customEvent = event as CustomEvent
       const { lat, lng } = customEvent.detail
       
+      console.log('Adicionando marcador de localização em:', lat, lng)
+
       // Remover marcador anterior se existir
       if (userLocationMarkerRef.current) {
         userLocationMarkerRef.current.remove()
@@ -146,31 +151,20 @@ export default function MapComponent() {
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 100;
       `
       
-      // Pulsação de fundo
-      const pulseOuter = document.createElement('div')
-      pulseOuter.style.cssText = `
-        position: absolute;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(41, 121, 255, 0.3), rgba(41, 121, 255, 0));
-        animation: pulse-location 2s ease-out infinite;
-      `
-      userLocationEl.appendChild(pulseOuter)
-
       // Círculo externo
       const outerCircle = document.createElement('div')
       outerCircle.style.cssText = `
-        position: absolute;
         width: 40px;
         height: 40px;
         border-radius: 50%;
         background: radial-gradient(circle at 30% 30%, #2979FF, #0d47a1);
         border: 4px solid white;
-        box-shadow: 0 0 0 1px #2979FF, 0 4px 12px rgba(41, 121, 255, 0.6);
-        z-index: 10;
+        box-shadow: 0 0 0 2px #2979FF, 0 4px 16px rgba(41, 121, 255, 0.8);
+        position: relative;
+        z-index: 2;
       `
       userLocationEl.appendChild(outerCircle)
 
@@ -178,26 +172,52 @@ export default function MapComponent() {
       const innerDot = document.createElement('div')
       innerDot.style.cssText = `
         position: absolute;
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
         background: white;
-        box-shadow: 0 0 8px rgba(41, 121, 255, 0.8);
-        z-index: 11;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        box-shadow: 0 0 6px rgba(41, 121, 255, 0.9);
       `
       userLocationEl.appendChild(innerDot)
 
-      // Adicionar marcador no mapa
-      userLocationMarkerRef.current = new mapboxgl.Marker({ element: userLocationEl, anchor: 'center' })
-        .setLngLat([lng, lat])
-        .addTo(map)
+      // Pulsação de fundo
+      const pulseOuter = document.createElement('div')
+      pulseOuter.style.cssText = `
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(41, 121, 255, 0.4), transparent);
+        animation: pulse-location 2s ease-out infinite;
+        z-index: 1;
+      `
+      userLocationEl.appendChild(pulseOuter)
 
-      // Animar para a localização
-      map.flyTo({
-        center: [lng, lat],
-        zoom: 16,
-        duration: 1000,
-      })
+      // Adicionar marcador no mapa
+      try {
+        userLocationMarkerRef.current = new mapboxgl.Marker({ 
+          element: userLocationEl, 
+          anchor: 'center',
+          draggable: false 
+        })
+          .setLngLat([lng, lat])
+          .addTo(map)
+        
+        console.log('Marcador adicionado com sucesso')
+
+        // Animar para a localização
+        map.flyTo({
+          center: [lng, lat],
+          zoom: 16,
+          duration: 1000,
+        })
+      } catch (error) {
+        console.error('Erro ao adicionar marcador:', error)
+      }
     }
 
     window.addEventListener('userGeolocation', handleGeolocation)
