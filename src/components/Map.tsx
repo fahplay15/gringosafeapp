@@ -117,10 +117,7 @@ export default function MapComponent() {
 
     mapRef.current = map
 
-    const navControl = new mapboxgl.NavigationControl({ showCompass: false })
-    map.addControl(navControl, 'top-right')
-
-    // Adicionar botão de localização atual
+    // Adicionar botão de localização atual no meio do lado direito
     const geolocateControl = new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: false
@@ -129,15 +126,7 @@ export default function MapComponent() {
       showUserHeading: true,
     })
     
-    map.addControl(geolocateControl, 'top-right')
-
-    // Aumentar z-index dos controles do mapa para acima de outros elementos
-    setTimeout(() => {
-      const controls = document.querySelectorAll('.mapboxgl-ctrl')
-      controls.forEach(ctrl => {
-        (ctrl as HTMLElement).style.zIndex = '50'
-      })
-    }, 100)
+    map.addControl(geolocateControl, 'bottom-right')
 
     return () => {
       map.remove()
