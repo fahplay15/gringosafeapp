@@ -117,26 +117,6 @@ export default function MapComponent() {
 
     mapRef.current = map
 
-    // Adicionar botão de localização atual no lado direito
-    const geolocateControl = new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: false
-      },
-      trackUserLocation: false,
-      showUserHeading: true,
-    })
-    
-    map.addControl(geolocateControl, 'top-right')
-
-    // Posicionar o geolocate acima de outros controles
-    setTimeout(() => {
-      const geolocateBtn = document.querySelector('.mapboxgl-ctrl-geolocate') as HTMLElement
-      if (geolocateBtn) {
-        geolocateBtn.style.marginTop = '10px'
-        geolocateBtn.style.marginRight = '10px'
-      }
-    }, 100)
-
     return () => {
       map.remove()
       mapRef.current = null
@@ -147,7 +127,23 @@ export default function MapComponent() {
     const map = mapRef.current
     if (!map) return
 
-    const onLoad = () => {
+    const handleGeolocation = (event: Event) => {
+      const customEvent = event as CustomEvent
+      const { lat, lng } = customEvent.detail
+      
+      map.flyTo({
+        center: [lng, lat],
+        zoom: 16,
+        duration: 1000,
+      })
+    }
+
+    window.addEventListener('userGeolocation', handleGeolocation)
+
+    return () => {
+      window.removeEventListener('userGeolocation', handleGeolocation)
+    }
+  }, [])
       markersRef.current.forEach((m) => m.remove())
       markersRef.current = []
 

@@ -3,6 +3,7 @@ import VendorPanel from '../components/VendorPanel'
 import TouristPanel from '../components/TouristPanel'
 import LocalPanel from '../components/LocalPanel'
 import MerchantPanel from '../components/MerchantPanel'
+import GeolocationButton from '../components/GeolocationButton'
 import { useAppStore } from '../store/appStore'
 import { Shield } from 'lucide-react'
 
@@ -36,6 +37,10 @@ export default function MapView() {
             <span className="text-xs text-gray-400">{label}</span>
           </div>
         ))}
+      </div>
+
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
+        <GeolocationButton />
       </div>
 
       {role === 'tourist' && <TouristPanel />}
