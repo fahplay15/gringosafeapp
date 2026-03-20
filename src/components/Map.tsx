@@ -141,10 +141,6 @@ export default function MapComponent() {
     const map = mapRef.current
     if (!map) return
 
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map) return
-
     const onLoad = () => {
       markersRef.current.forEach((m) => m.remove())
       markersRef.current = []
