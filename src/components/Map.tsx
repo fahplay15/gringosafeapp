@@ -144,6 +144,12 @@ export default function MapComponent() {
       window.removeEventListener('userGeolocation', handleGeolocation)
     }
   }, [])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+
+    const onLoad = () => {
       markersRef.current.forEach((m) => m.remove())
       markersRef.current = []
 
