@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { collection, onSnapshot } from 'firebase/firestore';
-import { db } from '../config/firebase'; 
+import { collection, onSnapshot, QuerySnapshot, DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import type { UserRole, Vendor, PriceQuery, LocalUser, PriceItem, QueryAnswer } from '../types';
 
 interface AppState {
@@ -104,10 +104,10 @@ export const useAppStore = create<AppState>((set: any) => ({
   initFirebaseListeners: () => {
     try {
       // 1. Escutando Preços
-      onSnapshot(collection(db, "precos"), (snapshot) => {
+      onSnapshot(collection(db, "precos"), (snapshot: QuerySnapshot<DocumentData>) => {
         const vendorsMap = new Map<string, Vendor>();
 
-        snapshot.forEach((docSnap) => {
+        snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
           // O "as any" desativa a rigidez do TypeScript nessa linha para aceitar o Firebase
           const data = docSnap.data() as any; 
           const vendorName = data.tipoLocal === 'Ambulante' ? `🚶 Ambulante (${docSnap.id.substring(0,4)})` : (data.local || "Desconhecido");
@@ -146,9 +146,9 @@ export const useAppStore = create<AppState>((set: any) => ({
       });
 
       // 2. Escutando Dúvidas do Turista
-      onSnapshot(collection(db, "perguntas"), (snapshot) => {
+      onSnapshot(collection(db, "perguntas"), (snapshot: QuerySnapshot<DocumentData>) => {
          const queriesLoaded: PriceQuery[] = [];
-         snapshot.forEach((docSnap) => {
+         snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
            const data = docSnap.data() as any;
            if (data.status === "aberta") {
               queriesLoaded.push({
