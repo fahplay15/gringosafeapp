@@ -128,6 +128,19 @@ export default function MapComponent() {
     
     map.addControl(geolocateControl, 'bottom-right')
 
+    // Posicionar o geolocate acima de outros controles
+    setTimeout(() => {
+      const geolocateBtn = document.querySelector('.mapboxgl-ctrl-geolocate') as HTMLElement
+      if (geolocateBtn) {
+        geolocateBtn.style.order = '-1'
+      }
+      const controlGroup = document.querySelector('.mapboxgl-ctrl-bottom-right') as HTMLElement
+      if (controlGroup) {
+        controlGroup.style.display = 'flex'
+        controlGroup.style.flexDirection = 'column'
+      }
+    }, 100)
+
     return () => {
       map.remove()
       mapRef.current = null
