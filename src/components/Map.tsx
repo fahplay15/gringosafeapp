@@ -98,7 +98,6 @@ export default function MapComponent() {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const queryMarkersRef = useRef<mapboxgl.Marker[]>([])
-  const userLocationMarkerRef = useRef<mapboxgl.Marker | null>(null)
 
   const { vendors, queries, radarActive, setSelectedVendor, setActiveQuery, role } = useAppStore()
 
@@ -118,6 +117,20 @@ export default function MapComponent() {
 
     mapRef.current = map
 
+    // Adicionar botão de geolocalização do Mapbox
+    const geolocateControl = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true,
+      showUserHeading: true,
+      fitBoundsOptions: {
+        maxZoom: 16
+      }
+    })
+    
+    map.addControl(geolocateControl, 'top-right')
+
     return () => {
       map.remove()
       mapRef.current = null
@@ -125,107 +138,8 @@ export default function MapComponent() {
   }, [])
 
   useEffect(() => {
-    const handleGeolocation = (event: Event) => {
-      const map = mapRef.current
-      if (!map) {
-        console.error('Mapa não inicializado')
-        return
-      }
-
-      const customEvent = event as CustomEvent
-      const { lat, lng } = customEvent.detail
-      
-      console.log('Adicionando marcador de localização em:', lat, lng)
-
-      // Remover marcador anterior se existir
-      if (userLocationMarkerRef.current) {
-        userLocationMarkerRef.current.remove()
-      }
-
-      // Criar elemento do marcador de localização do usuário
-      const userLocationEl = document.createElement('div')
-      userLocationEl.style.cssText = `
-        width: 50px;
-        height: 50px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-      `
-      
-      // Círculo externo
-      const outerCircle = document.createElement('div')
-      outerCircle.style.cssText = `
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, #2979FF, #0d47a1);
-        border: 4px solid white;
-        box-shadow: 0 0 0 2px #2979FF, 0 4px 16px rgba(41, 121, 255, 0.8);
-        position: relative;
-        z-index: 2;
-      `
-      userLocationEl.appendChild(outerCircle)
-
-      // Ponto central
-      const innerDot = document.createElement('div')
-      innerDot.style.cssText = `
-        position: absolute;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: white;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 3;
-        box-shadow: 0 0 6px rgba(41, 121, 255, 0.9);
-      `
-      userLocationEl.appendChild(innerDot)
-
-      // Pulsação de fundo
-      const pulseOuter = document.createElement('div')
-      pulseOuter.style.cssText = `
-        position: absolute;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(41, 121, 255, 0.4), transparent);
-        animation: pulse-location 2s ease-out infinite;
-        z-index: 1;
-      `
-      userLocationEl.appendChild(pulseOuter)
-
-      // Adicionar marcador no mapa
-      try {
-        userLocationMarkerRef.current = new mapboxgl.Marker({ 
-          element: userLocationEl, 
-          anchor: 'center',
-          draggable: false 
-        })
-          .setLngLat([lng, lat])
-          .addTo(map)
-        
-        console.log('Marcador adicionado com sucesso')
-
-        // Animar para a localização
-        map.flyTo({
-          center: [lng, lat],
-          zoom: 16,
-          duration: 1000,
-        })
-      } catch (error) {
-        console.error('Erro ao adicionar marcador:', error)
-      }
-    }
-
-    window.addEventListener('userGeolocation', handleGeolocation)
-
-    return () => {
-      window.removeEventListener('userGeolocation', handleGeolocation)
-    }
-  }, [])
+    const map = mapRef.current
+    if (!map) return
 
   useEffect(() => {
     const map = mapRef.current
