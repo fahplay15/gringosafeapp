@@ -94,6 +94,8 @@ function createPinElement(vendor: Vendor): HTMLElement {
 }
 
 export default function MapComponent() {
+  const mapContainer = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const queryMarkersRef = useRef<mapboxgl.Marker[]>([])
   const userLocationMarkerRef = useRef<mapboxgl.Marker | null>(null)
