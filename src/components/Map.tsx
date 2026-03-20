@@ -11,12 +11,6 @@ const STATUS_COLORS: Record<string, string> = {
   unverified: '#6B7280',
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  trusted: 'Confiável',
-  alert: 'Alerta de Golpe',
-  gold: 'Premium Verificado',
-  unverified: 'Não Verificado',
-}
 
 function createPinElement(vendor: Vendor): HTMLElement {
   const el = document.createElement('div')

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { PriceQuery } from '../types'
 
 function QueryModal() {
-  const { addQuery, setShowQueryModal, localUser } = useAppStore()
+  const { addQuery, setShowQueryModal } = useAppStore()
   const [question, setQuestion] = useState('')
 
   const handleSubmit = () => {
