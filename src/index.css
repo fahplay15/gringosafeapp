@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    @apply bg-brand-dark text-white font-sans m-0 p-0 overflow-hidden;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200 active:scale-95;
+  }
+  .glass-card {
+    @apply bg-brand-card border border-brand-border rounded-2xl;
+  }
+  .pin-pulse {
+    animation: pulse-ring 1.5s ease-out infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 1; }
+  70% { transform: scale(1.4); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
+}
+
+.mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
