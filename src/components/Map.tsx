@@ -140,25 +140,52 @@ export default function MapComponent() {
       // Criar elemento do marcador de localização do usuário
       const userLocationEl = document.createElement('div')
       userLocationEl.style.cssText = `
-        width: 32px;
-        height: 32px;
-        background: radial-gradient(circle at 30% 30%, #2979FF, #1a4fb8);
-        border-radius: 50%;
-        border: 3px solid white;
-        box-shadow: 0 0 20px #2979FF99, inset 0 0 10px rgba(255,255,255,0.3);
+        width: 50px;
+        height: 50px;
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       `
       
-      // Adicionar pulsação
-      const pulse = document.createElement('div')
-      pulse.style.cssText = `
+      // Pulsação de fundo
+      const pulseOuter = document.createElement('div')
+      pulseOuter.style.cssText = `
         position: absolute;
-        inset: -6px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
-        border: 2px solid #2979FF;
+        background: radial-gradient(circle, rgba(41, 121, 255, 0.3), rgba(41, 121, 255, 0));
         animation: pulse-location 2s ease-out infinite;
       `
-      userLocationEl.appendChild(pulse)
+      userLocationEl.appendChild(pulseOuter)
+
+      // Círculo externo
+      const outerCircle = document.createElement('div')
+      outerCircle.style.cssText = `
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #2979FF, #0d47a1);
+        border: 4px solid white;
+        box-shadow: 0 0 0 1px #2979FF, 0 4px 12px rgba(41, 121, 255, 0.6);
+        z-index: 10;
+      `
+      userLocationEl.appendChild(outerCircle)
+
+      // Ponto central
+      const innerDot = document.createElement('div')
+      innerDot.style.cssText = `
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 0 8px rgba(41, 121, 255, 0.8);
+        z-index: 11;
+      `
+      userLocationEl.appendChild(innerDot)
 
       // Adicionar marcador no mapa
       userLocationMarkerRef.current = new mapboxgl.Marker({ element: userLocationEl, anchor: 'center' })

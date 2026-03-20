@@ -32,8 +32,17 @@
 }
 
 @keyframes pulse-location {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(2); opacity: 0; }
+  0% { 
+    transform: scale(1); 
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% { 
+    transform: scale(1.8); 
+    opacity: 0;
+  }
 }
 
 .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
