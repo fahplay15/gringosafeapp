@@ -161,7 +161,7 @@ export default function MapComponent() {
       userLocationEl.appendChild(pulse)
 
       // Adicionar marcador no mapa
-      userLocationMarkerRef.current = new mapboxgl.Marker({ element: userLocationEl })
+      userLocationMarkerRef.current = new mapboxgl.Marker({ element: userLocationEl, anchor: 'center' })
         .setLngLat([lng, lat])
         .addTo(map)
 
