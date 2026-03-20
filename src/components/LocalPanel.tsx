@@ -1,4 +1,4 @@
-import { ArrowLeft, DollarSign, Plus, CheckCircle, Clock, Wallet, Send, Sparkles, AlertCircle } from 'lucide-react'
+import { ArrowLeft, DollarSign, Plus, CheckCircle, Clock, Wallet, Send, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useAppStore } from '../store/appStore'
 import { useGemini } from '../hooks/useGemini'
