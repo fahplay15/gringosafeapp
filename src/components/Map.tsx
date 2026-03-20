@@ -117,13 +117,13 @@ export default function MapComponent() {
 
     mapRef.current = map
 
-    // Adicionar botão de geolocalização do Mapbox (sem marcador visual)
+    // Adicionar botão de geolocalização do Mapbox
     const geolocateControl = new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
       },
-      trackUserLocation: false,
-      showUserHeading: false,
+      trackUserLocation: true,
+      showUserHeading: true,
       fitBoundsOptions: {
         maxZoom: 16
       }
