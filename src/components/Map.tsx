@@ -14,39 +14,53 @@ const STATUS_COLORS: Record<string, string> = {
 
 function createPinElement(vendor: Vendor): HTMLElement {
   const el = document.createElement('div')
-  el.style.position = 'relative'
+  el.style.display = 'flex'
+  el.style.alignItems = 'flex-end'
+  el.style.justifyContent = 'center'
   el.style.cursor = 'pointer'
+  el.style.position = 'relative'
 
   const size = vendor.isPremium ? 52 : 40
   const color = STATUS_COLORS[vendor.status]
 
-  el.innerHTML = `
-    <div style="
-      width: ${size}px;
-      height: ${size}px;
-      background: ${color};
-      border-radius: 50% 50% 50% 4px;
-      transform: rotate(-45deg);
-      border: 3px solid rgba(255,255,255,0.9);
-      box-shadow: 0 4px 16px ${color}88;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    ">
-      ${vendor.isPremium ? `<div style="transform:rotate(45deg);font-size:20px;">★</div>` : ''}
-    </div>
-    ${vendor.status === 'alert' ? `
-      <div style="
-        position:absolute; top:-4px; right:-4px;
-        width:16px; height:16px;
-        background:#FF1744;
-        border-radius:50%;
-        border:2px solid #0D1117;
-        display:flex;align-items:center;justify-content:center;
-        font-size:10px; color:white; font-weight:bold;
-      ">!</div>` : ''}
+  const pin = document.createElement('div')
+  pin.style.cssText = `
+    width: ${size}px;
+    height: ${size}px;
+    background: ${color};
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 3px solid rgba(255,255,255,0.9);
+    box-shadow: 0 4px 16px ${color}88;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
   `
+  
+  if (vendor.isPremium) {
+    const star = document.createElement('div')
+    star.style.cssText = `transform:rotate(45deg);font-size:20px;`
+    star.textContent = '★'
+    pin.appendChild(star)
+  }
+
+  el.appendChild(pin)
+
+  if (vendor.status === 'alert') {
+    const alert = document.createElement('div')
+    alert.style.cssText = `
+      position:absolute; top:-4px; right:-4px;
+      width:16px; height:16px;
+      background:#FF1744;
+      border-radius:50%;
+      border:2px solid #0D1117;
+      display:flex;align-items:center;justify-content:center;
+      font-size:10px; color:white; font-weight:bold;
+    `
+    alert.textContent = '!'
+    el.appendChild(alert)
+  }
 
   if (vendor.isPremium) {
     const pulse = document.createElement('div')
@@ -58,6 +72,18 @@ function createPinElement(vendor: Vendor): HTMLElement {
     `
     el.appendChild(pulse)
   }
+
+  const label = document.createElement('div')
+  label.style.cssText = `
+    position:absolute; bottom:-32px; left:50%; transform:translateX(-50%);
+    background:rgba(13,17,23,0.95); color:white; font-size:11px;
+    padding:4px 8px; border-radius:6px; white-space:nowrap;
+    border:1px solid ${STATUS_COLORS[vendor.status]}77;
+    pointer-events:none;
+    font-weight:500;
+  `
+  label.textContent = vendor.name
+  el.appendChild(label)
 
   return el
 }
@@ -86,7 +112,19 @@ export default function MapComponent() {
 
     mapRef.current = map
 
-    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
+    const navControl = new mapboxgl.NavigationControl({ showCompass: false })
+    map.addControl(navControl, 'top-right')
+
+    // Adicionar botão de localização atual
+    const geolocateControl = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: false
+      },
+      trackUserLocation: false,
+      showUserHeading: true,
+    })
+    
+    map.addControl(geolocateControl, 'top-right')
 
     return () => {
       map.remove()
@@ -107,18 +145,7 @@ export default function MapComponent() {
 
         el.addEventListener('click', () => setSelectedVendor(vendor))
 
-        const label = document.createElement('div')
-        label.style.cssText = `
-          position:absolute; bottom:-28px; left:50%; transform:translateX(-50%);
-          background:rgba(13,17,23,0.9); color:white; font-size:11px;
-          padding:2px 8px; border-radius:8px; white-space:nowrap;
-          border:1px solid ${STATUS_COLORS[vendor.status]}55;
-          pointer-events:none;
-        `
-        label.textContent = vendor.name
-        el.appendChild(label)
-
-        const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+        const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
           .setLngLat([vendor.lng, vendor.lat])
           .addTo(map)
 
