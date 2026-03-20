@@ -42,8 +42,8 @@ export default function Landing() {
   const setRole = useAppStore((s) => s.setRole)
 
   return (
-    <div className="min-h-screen bg-brand-dark flex flex-col items-center justify-center px-4 py-10">
-      <div className="flex flex-col items-center mb-10">
+    <div className="min-h-screen bg-brand-dark flex flex-col items-center justify-center px-4 py-16 gap-10">
+      <div className="flex flex-col items-center">
         <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-green-500 to-emerald-300 flex items-center justify-center mb-4 shadow-lg shadow-green-500/40">
           <Shield className="w-10 h-10 text-white" strokeWidth={2.5} />
         </div>
@@ -81,7 +81,7 @@ export default function Landing() {
         ))}
       </div>
 
-      <p className="text-gray-600 text-xs mt-10">
+      <p className="text-gray-600 text-xs mb-8">
         Dados demonstrativos — Praia de Tambaú, João Pessoa/PB
       </p>
     </div>

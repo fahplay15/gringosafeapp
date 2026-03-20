@@ -9,7 +9,7 @@
     box-sizing: border-box;
   }
   body {
-    @apply bg-brand-dark text-white font-sans m-0 p-0 overflow-hidden;
+    @apply bg-brand-dark text-white font-sans m-0 p-0;
   }
 }
 
