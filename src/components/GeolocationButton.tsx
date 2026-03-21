@@ -8,19 +8,20 @@ export default function GeolocationButton() {
     if (isLoading) return
 
     // Usar o controle de geolocalização do Mapbox
-    const geolocateControl = window.geolocateControl
+    const geolocateControl = (window as any).geolocateControl
     if (!geolocateControl) {
-      alert('Mapa não inicializado. Tente novamente.')
+      console.error('GeolocateControl não encontrado')
       return
     }
 
     setIsLoading(true)
     
+    console.log('Acionando geolocalização...')
     // Acionar o controle de geolocalização
     geolocateControl.trigger()
 
-    // Simular fim do loading após 1 segundo
-    setTimeout(() => setIsLoading(false), 1000)
+    // Simular fim do loading após 2 segundos
+    setTimeout(() => setIsLoading(false), 2000)
   }
 
   return (

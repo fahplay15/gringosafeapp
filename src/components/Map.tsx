@@ -138,9 +138,12 @@ export default function MapComponent() {
     })
     
     geolocateControlRef.current = geolocateControl
+    
+    // Adicionar controle ao mapa (não será visível pois o botão é customizado)
+    map.addControl(geolocateControl)
 
     // Expor para uso no botão personalizado (sem exibir o botão do Mapbox)
-    window.geolocateControl = geolocateControl
+    ;(window as any).geolocateControl = geolocateControl
 
     return () => {
       map.remove()
