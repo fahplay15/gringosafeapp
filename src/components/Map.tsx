@@ -138,9 +138,8 @@ export default function MapComponent() {
     })
     
     geolocateControlRef.current = geolocateControl
-    map.addControl(geolocateControl)
 
-    // Expor para uso no botão personalizado
+    // Expor para uso no botão personalizado (sem exibir o botão do Mapbox)
     window.geolocateControl = geolocateControl
 
     return () => {
