@@ -11,6 +11,13 @@ const STATUS_COLORS: Record<string, string> = {
   unverified: '#6B7280',
 }
 
+// Expor referência do controle de geolocalização globalmente
+declare global {
+  interface Window {
+    geolocateControl: mapboxgl.GeolocateControl | null
+  }
+}
+
 
 function createPinElement(vendor: Vendor): HTMLElement {
   const size = vendor.isPremium ? 52 : 40
@@ -96,6 +103,7 @@ function createPinElement(vendor: Vendor): HTMLElement {
 export default function MapComponent() {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
+  const geolocateControlRef = useRef<mapboxgl.GeolocateControl | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const queryMarkersRef = useRef<mapboxgl.Marker[]>([])
 
@@ -117,7 +125,7 @@ export default function MapComponent() {
 
     mapRef.current = map
 
-    // Adicionar botão de geolocalização do Mapbox
+    // Criar controle de geolocalização (sem exibir botão)
     const geolocateControl = new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
@@ -129,7 +137,11 @@ export default function MapComponent() {
       }
     })
     
-    map.addControl(geolocateControl, 'top-right')
+    geolocateControlRef.current = geolocateControl
+    map.addControl(geolocateControl)
+
+    // Expor para uso no botão personalizado
+    window.geolocateControl = geolocateControl
 
     return () => {
       map.remove()

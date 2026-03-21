@@ -7,36 +7,20 @@ export default function GeolocationButton() {
   const handleGeolocation = () => {
     if (isLoading) return
 
-    if (!navigator.geolocation) {
-      alert('Geolocalização não suportada neste navegador')
+    // Usar o controle de geolocalização do Mapbox
+    const geolocateControl = window.geolocateControl
+    if (!geolocateControl) {
+      alert('Mapa não inicializado. Tente novamente.')
       return
     }
 
     setIsLoading(true)
+    
+    // Acionar o controle de geolocalização
+    geolocateControl.trigger()
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords
-        
-        // Disparar evento customizado com as coordenadas
-        window.dispatchEvent(
-          new CustomEvent('userGeolocation', {
-            detail: { lat: latitude, lng: longitude },
-          })
-        )
-
-        setIsLoading(false)
-      },
-      (error) => {
-        console.error('Erro ao obter localização:', error)
-        alert('Erro ao obter sua localização. Verifique as permissões do navegador.')
-        setIsLoading(false)
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-      }
-    )
+    // Simular fim do loading após 1 segundo
+    setTimeout(() => setIsLoading(false), 1000)
   }
 
   return (
